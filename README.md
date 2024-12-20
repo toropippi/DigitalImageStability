@@ -1,5 +1,5 @@
 # Image Stability 解析
-
+(Readmeの文章の一部はChat GPT 4oで書かれています)
 ## このプロジェクトについて
 このプロジェクトは、[PNAS誌に掲載された論文](https://www.pnas.org/doi/10.1073/pnas.2406735121)のアイディアに基づいています。また、[論文著者がGoogle Driveに公開したコード](https://x.com/potato7192/status/1868859454139306454)を参考にして実装されています。  
   
