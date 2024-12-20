@@ -56,7 +56,7 @@ python ImageStability.py
 
 ### 例
 画像 `face.png` を指定すると、以下の結果が得られます：
-- DeltaS_M: ** 0.2946908 **（例値）
+- DeltaS_M: **0.2946908**（例値）
 - ΔS、S、S* を示すグラフ。
 - 反転画像とシャッフル画像がカレントディレクトリに保存されます。
 
@@ -79,6 +79,7 @@ python ImageStability.py
 このプロジェクトコードはMITライセンスの下で公開されています。コードの利用、変更、再配布は自由に行えます。  
 This project code is licensed under the MIT License.  
 
+またEmote_refined.pngは著者に許可を得て使用しております。  
 ---
 
 ---
@@ -151,6 +152,7 @@ If the image `face.png` is provided, the script computes and outputs the followi
 The metric **DeltaS_M** represents the structural stability of the image. It quantifies how resistant the image's structure is to random pixel perturbations. A higher DeltaS_M indicates greater sharpness and structural integrity.
 
 ## License
-This project code is licensed under the MIT License. Feel free to use, modify, and distribute the code as needed.
-
+This project code is licensed under the MIT License. Feel free to use, modify, and distribute the code as needed.  
+  
+Emote_refined.png is used with permission of the author.  
 ---
