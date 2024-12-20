@@ -33,7 +33,7 @@ pip install numpy pillow matplotlib
 ## 使い方
 1. リポジトリをクローンするか、スクリプト `ImageStability.py` をダウンロードしてください。
 2. 解析したい画像をスクリプトと同じディレクトリに配置してください。
-3. スクリプト内の `image_name` 変数に画像ファイル名を指定してください（デフォルト: `Lenna.png`）。
+3. スクリプト内の `image_name` 変数に画像ファイル名を指定してください（デフォルト: `face.png`）。
 4. スクリプトを実行してください：
 ```bash
 python ImageStability.py
@@ -55,8 +55,8 @@ python ImageStability.py
   - `image_name_stabilityMetric.txt`: 安定性指標のデータ。
 
 ### 例
-画像 `Lenna.png` を指定すると、以下の結果が得られます：
-- DeltaS_M: **0.16198269**（例値）
+画像 `face.png` を指定すると、以下の結果が得られます：
+- DeltaS_M: ** 0.2946908 **（例値）
 - ΔS、S、S* を示すグラフ。
 - 反転画像とシャッフル画像がカレントディレクトリに保存されます。
 
@@ -111,7 +111,7 @@ pip install numpy pillow matplotlib
 ## Usage
 1. Clone the repository or download the script `ImageStability.py`.
 2. Place the image you want to analyze in the same directory as the script.
-3. Open the script and specify the image file name in the `image_name` variable (default: `Lenna.png`).
+3. Open the script and specify the image file name in the `image_name` variable (default: `face.png`).
 4. Run the script:
 ```bash
 python ImageStability.py
@@ -133,8 +133,8 @@ python ImageStability.py
   - `image_name_stabilityMetric.txt`: Stability metric data.
 
 ### Example
-If the image `Lenna.png` is provided, the script computes and outputs the following:
-- DeltaS_M: **0.4276** (example value)
+If the image `face.png` is provided, the script computes and outputs the following:
+- DeltaS_M: **0.2946908** (example value)
 - Graphs illustrating ΔS, S, and S*.
 - Flipped and shuffled images saved to the current directory.
 
