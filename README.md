@@ -78,8 +78,8 @@ python ImageStability.py
 ## ライセンス(License)
 このプロジェクトコードはMITライセンスの下で公開されています。コードの利用、変更、再配布は自由に行えます。  
 This project code is licensed under the MIT License.  
-
 またEmote_refined.pngは著者に許可を得て使用しております。  
+  
 ---
 
 ---
@@ -155,4 +155,5 @@ The metric **DeltaS_M** represents the structural stability of the image. It qua
 This project code is licensed under the MIT License. Feel free to use, modify, and distribute the code as needed.  
   
 Emote_refined.png is used with permission of the author.  
+  
 ---
