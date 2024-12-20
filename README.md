@@ -8,7 +8,8 @@
 
 関連記事 [絵文字と物理学　画像の「くっきりさ」を数値化する手法を開発](https://www.oist.jp/ja/news-center/news/2024/12/13/physics-and-emote-design-quantifying-clarity-digital-images)  
 関連記事 [OIST、デジタル画像の「視覚的な鮮明さ」を定量的に評価する手法を提案](https://news.mynavi.jp/techplus/article/20241217-3088143/)  
-  
+
+### 実行時イメージ
 ![image35](https://github.com/user-attachments/assets/6329274a-68ad-4f38-bce3-b93d9743e612)  
 
 ## 特徴
