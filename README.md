@@ -1,11 +1,10 @@
-# 画像の安定性解析
+# Image Stability 解析
 
 ## このプロジェクトについて
 このプロジェクトは、[PNAS誌に掲載された論文](https://www.pnas.org/doi/10.1073/pnas.2406735121)のアイディアに基づいています。また、[論文著者がGoogle Driveに公開したコード](https://x.com/potato7192/status/1868859454139306454)を参考にして実装されています。  
   
 このPythonプロジェクトは、**DeltaS_M**と呼ばれる構造的安定性指標を用いて、画像の「くっきりさ」を定量化するツールを提供します。この指標は、ピクセルのランダムなフリップやシャッフル操作により、画像の構造がどのように劣化するかを解析計算できます。  
-
-
+  
 関連記事 [絵文字と物理学　画像の「くっきりさ」を数値化する手法を開発](https://www.oist.jp/ja/news-center/news/2024/12/13/physics-and-emote-design-quantifying-clarity-digital-images)  
 関連記事 [OIST、デジタル画像の「視覚的な鮮明さ」を定量的に評価する手法を提案](https://news.mynavi.jp/techplus/article/20241217-3088143/)  
 
