@@ -53,7 +53,7 @@ def compare_images_ed(img1, img2):
 
 
 # Parameters
-image_name = 'スクショ.png' # ここに読み込ませたい画像のファイル名を
+image_name = 'face.png' # ここに読み込ませたい画像のファイル名を
 num_iter = 10 # 画素数×num_iter回フリップする。この数字を大きくすると計算時間も長くなる
 num_avg = 1 # 未実装。ランダムなので結果が毎回かわる。何回の平均を出すか
 max_num_flip = 0.1 # 1回のイテレーションでまとめてフリップするピクセルの数/col/raw
