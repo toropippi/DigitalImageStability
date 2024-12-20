@@ -9,7 +9,8 @@
 関連記事 [OIST、デジタル画像の「視覚的な鮮明さ」を定量的に評価する手法を提案](https://news.mynavi.jp/techplus/article/20241217-3088143/)  
 
 ### 実行時イメージ
-![image35](https://github.com/user-attachments/assets/6329274a-68ad-4f38-bce3-b93d9743e612)  
+![36](https://github.com/user-attachments/assets/12da3412-1ec8-4c4d-82c3-9cf7e1f48426)  
+
 
 ## 特徴
 - ユーザーが指定した画像を読み込み。
