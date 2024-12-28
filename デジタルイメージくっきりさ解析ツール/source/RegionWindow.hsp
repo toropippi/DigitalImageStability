@@ -1,0 +1,141 @@
+#define WM_SIZE		0x5        ;ウインドウのサイズが変更
+#define NULL        0
+#define SRCCOPY     0x00CC0020
+#define CAPTUREBLT  0x40000000
+
+#include "user32.as"
+
+#uselib "gdi32"
+#cfunc CreateRectRgn "CreateRectRgn" int, int, int, int
+#func CombineRgn "CombineRgn" int, int, int, int
+#func DeleteObject "DeleteObject" int
+#cfunc CreateDC "CreateDCA" sptr,sptr,sptr,int
+#func BitBlt "BitBlt" int,int,int,int,int,int,int,int,int
+hdcScreen = CreateDC("DISPLAY", NULL, NULL, NULL)
+
+#uselib "user32"
+#func SetWindowRgn_ "SetWindowRgn" int, int, int
+#func GetWindowRect_ "GetWindowRect" int, var
+#func GetClientRect_ "GetClientRect" int, var
+#func ClientToScreen_ "ClientToScreen" int, var
+#func ScreenToClient_ "ScreenToClient" int, var
+
+//HighDPI
+/*
+#uselib "gdi32.dll"
+#ifndef SetProcessDPIAware
+#uselib "user32"
+#func SetProcessDPIAware "SetProcessDPIAware"
+#endif
+
+#uselib "shcore"
+#func SetProcessDpiAwareness "SetProcessDpiAwareness" int
+//#func GetScaleFactorForMonitor "GetScaleFactorForMonitor" int, int
+
+#const PROCESS_PER_MONITOR_DPI_AWARE 2
+#const DISPLAY_DEVICE_PRIMARY_DEVICE 4
+#const DISPLAY_DEVICE_ACTIVE 1
+#const ENUM_CURRENT_SETTINGS -1
+#const MONITOR_DEFAULTTONULL 0
+#const LOGPIXELSX 88
+#const LOGPIXELSY 90
+#const HALFTONE 4
+#const TA_LEFT 0
+#const TA_RIGHT 2
+#const TA_CENTER 6
+//HighDPI
+
+    if varptr(SetProcessDpiAwareness) {
+        SetProcessDpiAwareness PROCESS_PER_MONITOR_DPI_AWARE
+    } else : if varptr(SetProcessDPIAware) {
+        SetProcessDPIAware
+    }
+*/
+
+
+#const wx 2048//screen 1サイズ
+#const wy 2048//screen 1サイズ
+#const bdr 12//ボーダーサイズ
+	buffer 2,wx,wy//キャプチャ画像格納用
+	screen 1,wx,wy,0,20,40,640,640//キャプチャ枠用
+	title "Capture window"
+	
+	gsel 1:oncmd gosub *resz, WM_SIZE
+	gosub*resz
+
+
+
+goto*_____________________last0
+
+
+	//スクリーンキャプチャ
+*OneCapture
+	gsel 1
+	dim clientPos,2
+	ClientToScreen_ hWnd, clientPos
+	_tmpx=ginfo(12) - bdr * 2
+	_tmpy=ginfo(13) - bdr * 2
+	if _tmpx<4:_tmpx=4
+	if _tmpy<4:_tmpy=4
+	//キャプチャとbuffer 2リサイズ
+	gsel 2
+	flag=0
+	if _tmpx!=ginfo(12):flag++
+	if _tmpy!=ginfo(13):flag++
+	if flag{
+		buffer 2,_tmpx,_tmpy
+		gosub*gsel1titleSet
+	}
+	gsel 2
+	BitBlt hdc, 0, 0, _tmpx, _tmpy, hdcScreen, clientPos.0 + bdr, clientPos.1 + bdr, SRCCOPY | CAPTUREBLT//その領域をキャプチャ
+	return
+
+*gsel1titleSet
+	gsel 1
+	_tmpx=ginfo(12) - bdr * 2
+	_tmpy=ginfo(13) - bdr * 2
+	title "Capture window x="+_tmpx+" y="+_tmpy+""
+	return
+
+;ウインドウのサイズが変更
+*resz
+	gosub*MakeResion
+;	ドーナツ型ウィンドウになる
+	gsel 1
+	SetWindowRgn_ hwnd, hRegion.0, 1
+	DeleteObject hRegion.0//使われないhRegion.0は削除
+	//title
+	gosub*gsel1titleSet
+	gosub*LineBorder
+    return
+
+*LineBorder
+	gsel 1
+	color 255,0,0
+	boxf
+	color 0,0,0
+	boxf 8,8,ginfo(12)-8,ginfo(13)-8
+	color 255,255,255
+	boxf 10,10,ginfo(12)-10,ginfo(13)-10
+	return
+
+*MakeResion
+	gsel 1
+	dim clientRect, 4    ; クライアント領域の矩形
+	dim clientPos, 2     ; スクリーン座標に変換されたクライアント領域左上の位置
+	// クライアント領域の位置（相対座標）とサイズを取得
+	GetClientRect_ hWnd, clientRect
+	// クライアント領域の左上（0,0）をスクリーン座標に変換
+	clientPos(0) = clientRect(0)
+	clientPos(1) = clientRect(1)
+	ClientToScreen_ hWnd, clientPos
+	rmx=clientPos(0)-ginfo(4)//リージョンからみた描画可能範囲0,0のいち
+	rmy=clientPos(1)-ginfo(5)//リージョンからみた描画可能範囲0,0のいち
+	
+;	現在のウィンドウ(四角形)のリージョン作成。
+	hRegion.0 = CreateRectRgn(0,0,ginfo(10),ginfo(11))
+	hRegion.1 = CreateRectRgn(rmx+bdr,rmy+bdr,rmx+ginfo(12)-bdr,rmy+ginfo(13)-bdr)
+	CombineRgn hRegion.0, hRegion.0, hRegion.1, 4//取り除く
+	DeleteObject hRegion.1//使われないhRegion.1は削除
+	return
+*_____________________last0

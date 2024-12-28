@@ -1,0 +1,193 @@
+screen 0,640,400
+pos 400,0:title "デジタルイメージくっきりさ解析ツール"
+combox fps,120,"60FPS\n30FPS\n15FPS\n1FPS"
+#include "HSPCL64.as"
+#include "RegionWindow.hsp"
+#include "HighDPI.hsp"
+#include "func.hsp"
+
+// 初期化
+HCLINIT
+HCLSETDEVICE 0
+
+meandeltaSMax=0.0
+meandeltaSMaxWeight=0.95
+
+// カーネルのビルド
+ProgramId             = HCLCreateProgram("randomflip.cl")
+KernelConvertFormat   = HCLCreateKernel(ProgramId, "convertPixelFormat")
+KernelRandomAccess    = HCLCreateKernel(ProgramId, "randomSharedMemoryAccess")
+KernelFlipSwap        = HCLCreateKernel(ProgramId, "flipSwapPixels")
+//KernelStabilityMetric = HCLCreateKernel(ProgramId, "calculateStabilityMetric")
+KernelcalculateStabilityMetricTile = HCLCreateKernel(ProgramId, "calculateStabilityMetricTile")
+
+
+///AllScoreのメモリレイアウト
+/*
+    ┌───────────────────────────────────┐
+[0] │ 元の場所と同じピクセル数         │ uint
+    ├───────────────────────────────────┤
+[2] │ 全体シャッフル後の平均距離(ulong 下位) │ uint
+[3] │ 全体シャッフル後の平均距離(ulong 上位) │ uint
+    ├───────────────────────────────────┤
+[4] │ (部分計算時点)全体平均(ulong 下位)     │ uint
+[5] │ (部分計算時点)全体平均(ulong 上位)     │ uint
+    ├───────────────────────────────────┤
+[6 + 2*n  ] │ ブロックnの部分平均(ulong 下位)  │ uint
+[6 + 2*n+1] │ ブロックnの部分平均(ulong 上位)  │ uint
+    └───────────────────────────────────┘
+*/
+///
+
+	repeat -1
+	if fps==0:await 16
+	if fps==1:await 33
+	if fps==2:await 66
+	if fps>2:await 1000
+
+	// CPU負荷
+	gosub *OneCapture	; キャプチャと画面サイズ変更検知
+	gsel 2
+	mref InputData, 66
+	ImgWidth  = ginfo(12)
+	ImgHeight = ginfo(13)
+
+	gsel 0	; 画面を白塗り
+	redraw 0
+	color 30,30,30
+	boxf
+	pos 0,0
+	color 255,255,255
+
+	ScaleFactor = 400.0 / (ImgWidth + ImgHeight)
+	if ScaleFactor > 1.0 : ScaleFactor = 1.0
+	ResizedWidth  = ScaleFactor * ImgWidth
+	ResizedHeight = ScaleFactor * ImgHeight
+	gzoom ResizedWidth, ResizedHeight, 2, 0, 0, ImgWidth, ImgHeight, 1
+
+	gosub *colcount
+	; CPU負荷ここまで
+	HCLGarbageCollectionNow
+
+	; GPUメモリ初期化関係
+	AllScore         = HCLCreateBuffer(4*(6+2*((ImgWidth/16)*(ImgHeight/16))))
+	HCLFillBuffer AllScore, 0
+
+	;-----------------------------------------------
+	; GPU がやること
+	;-----------------------------------------------
+	; step1: PixelFormat の変換 (uchar -> uint)
+	InputDataBuffer  = HCLCreateBuffer(varsize(InputData))
+	PixelDataBuffer  = HCLCreateBuffer(ImgWidth * ImgHeight * 4)	; 1ピクセル=4byte
+
+	StartEvent = 0
+	HCLWriteBuffer InputDataBuffer, InputData, varsize(InputData), 0, 0, 0, StartEvent
+	HCLFlush
+
+	; ---- step1 実行 (10-30us程度) ----
+	HCLSetKrns KernelConvertFormat, InputDataBuffer, PixelDataBuffer, ImgWidth, ImgHeight
+	HCLDoKrn1_sub KernelConvertFormat, (ImgWidth * ImgHeight), 64
+	; ---- step1 ----
+
+	; ---- step2: ランダムを用いた色空間距離の近似計算 (10-30us程度) ----
+	; ランダムを計算する group の数(local_size=256 で固定)
+	RGroupCount       = 1024
+	HCLSetKrns KernelRandomAccess, PixelDataBuffer, AllScore, (ImgWidth * ImgHeight), Rnd32bit(), Rnd32bit()
+	HCLDoKrn1 KernelRandomAccess, (RGroupCount * 256), 256
+	; ---- step2 ----
+
+	; ---- step3: flipSwap & 安定度計測 ----
+	IndexBuffer = HCLCreateBuffer(ImgWidth * ImgHeight * 4)
+	HCLDoXi "A[i] = i;", IndexBuffer
+	GroupCount = (ImgWidth * ImgHeight + 255) / 256
+	EndEvent   = 1
+
+	; 最後の1回だけ スワップ後の計測
+	//720Mhz時
+	//7500us (5*9full)
+	//3700us(4*9+9full)
+	//4150us(5*9full 合体global atomic)
+	deltaSMax=0.0
+	lastdeltaSMax=0.0
+	looptotalcnt=0
+	repeat 6
+	ccnt=cnt
+		gosub *random9
+		repeat 9
+			NowColor  = rand9.cnt
+			WidthDiv3 = ImgWidth / 3
+			if (ImgWidth \ 3) > (NowColor \ 3) : WidthDiv3++
+	
+			HCLSetKrns KernelFlipSwap, IndexBuffer,PixelDataBuffer, AllScore, NowColor, WidthDiv3, Rnd32bit(), Rnd32bit(), ImgWidth, ImgHeight, col9n.NowColor
+			HCLDoKrn1 KernelFlipSwap, ((col9n.NowColor + 63) / 64) * 64, 64
+
+			HCLdim_i64FromBuffer score,AllScore
+			StructuralStabilityasterisk = double(score.1) / 2.0 / RGroupCount / 256.0 / 65536.0*double(score.0) / (ImgWidth * ImgHeight)
+			StructuralStability = double(score.2) / 65536.0 / ImgWidth / ImgHeight
+			lastdeltaSMax=deltaS
+			deltaS=StructuralStabilityasterisk-StructuralStability
+			looptotalcnt++
+			if lastdeltaSMax>deltaS:break
+			if deltaSMax<deltaS:deltaSMax=deltaS
+		loop
+	loop
+	; ---- step3 ----
+
+	; ---- step4 ----
+	if ((ImgWidth / 16) * (ImgHeight / 16)) != 0{
+		HCLSetKrns KernelcalculateStabilityMetricTile, IndexBuffer, PixelDataBuffer,AllScore , ImgWidth/16, ImgWidth
+		HCLDoKrn1 KernelcalculateStabilityMetricTile, (ImgWidth / 16) * (ImgHeight / 16) * 256, 256, EndEvent
+	}
+	HCLdim_i64FromBuffer score,AllScore
+	; ---- step4 ----
+
+	HCLFinish
+
+	; 実行時間を計算 (ナノ秒 -> マイクロ秒)
+	gosub *view1
+	gosub *view2
+	redraw 1
+loop
+
+
+*view1
+	pos 398, 40
+	color 255,255,255
+	meandeltaSMax=meandeltaSMax*meandeltaSMaxWeight+deltaSMax*(1.0-meandeltaSMaxWeight)
+	mes "ΔSmax(瞬間値　): "+deltaSMax
+	mes "ΔSmax(時間平均): "+meandeltaSMax
+	mes "平均色距離<dc>: "+ double(score.1) / 2.0 / RGroupCount / 256.0 / 65536.0
+	//mes "移動したピクセル"+score.0+"/"+(ImgWidth * ImgHeight)
+	//mes "計算イテレーション数: "+looptotalcnt
+	
+	; プロファイリングデータを取得
+	ProfilingStart = HCLGetEventLogs(StartEvent, 6)
+	ProfilingEnd   = HCLGetEventLogs(EndEvent, 7)
+	; 実行時間を計算 (ナノ秒 -> マイクロ秒)
+	GpuTime = (ProfilingEnd - ProfilingStart) / 1000.0
+	mes "GPU Time: " + GpuTime + " マイクロ秒"
+	return
+
+*view2
+	gsel 0
+	color 0,0,0
+	gmode 4,,,168
+	grect ResizedWidth/2, ResizedHeight/2,0,ResizedWidth, ResizedHeight
+		repeat ImgHeight / 16
+		y=cnt
+			repeat ImgWidth / 16
+			x=cnt
+			lx=ResizedWidth*(x*16)/ImgWidth
+			ly=ResizedHeight*(y*16)/ImgHeight
+			rx=ResizedWidth*(x*16+16)/ImgWidth
+			ry=ResizedHeight*(y*16+16)/ImgHeight
+
+			val=double(score.(3+x+y*(ImgWidth / 16)))/65536.0/65536.0*1.7
+			
+			color 255,255,0
+			gmode 5,,,int(255.0*val)
+			grect (lx+rx)/2, (ly+ry)/2,0,rx-lx,ry-ly
+			loop
+		loop
+	
+	return

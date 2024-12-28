@@ -1,0 +1,81 @@
+;----------------------------------------
+; ランダムで 0~8 の順序をシャッフルする
+;----------------------------------------
+goto *_____________________last1
+
+*random9
+    ; 0~8 の初期配置を rand9[] にセット
+    dim rand9, 9
+    repeat 9
+        rand9.cnt = cnt
+    loop
+
+    ; Fisher-Yatesシャッフルの簡易実装 (9要素に対して8回)
+    repeat 8
+        revIndex     = 8 - cnt
+        randomIndex  = rnd(32768) \ (9 - cnt)   ; 残り要素の中でランダムに選ぶ
+        tempVal      = rand9.revIndex
+        rand9.revIndex    = rand9.randomIndex
+        rand9.randomIndex = tempVal
+    loop
+
+return
+
+
+;----------------------------------------
+; 画像を 3x3 ブロックに分割した際の各ブロック数を計算
+; col9n[] に格納 (色 0~8 のブロック数)
+;----------------------------------------
+*colcount
+    widthDiv3    = ImgWidth  / 3
+    heightDiv3   = ImgHeight / 3
+    dim col9n, 9            ; 0~8 の色カウント配列
+
+    ; まず、3x3 ブロックの中心部分に含まれる数を一括セット
+    repeat 9
+        col9n.cnt = widthDiv3 * heightDiv3
+    loop
+
+    ; 端の余り (幅方向, 高さ方向 の剰余)
+    widthRem3  = ImgWidth  \ 3
+    heightRem3 = ImgHeight \ 3
+
+    ; 幅端の余り (widthRem3 >= 1 なら左or右端に余りが生じる)
+    if (widthRem3 >= 1) {
+        ; 0,3,6 の列に対して
+        col9n.0 += heightDiv3 + (heightRem3 > 0)
+        col9n.3 += heightDiv3 + (heightRem3 > 1)
+        col9n.6 += heightDiv3
+    }
+    if (widthRem3 >= 2) {
+        ; 1,4,7 の列に対して
+        col9n.1 += heightDiv3 + (heightRem3 > 0)
+        col9n.4 += heightDiv3 + (heightRem3 > 1)
+        col9n.7 += heightDiv3
+    }
+
+    ; 高さ端の余り (heightRem3 >= 1 なら上下端に余りが生じる)
+    if (heightRem3 >= 1) {
+        ; 0,1,2 の行に対して
+        col9n.0 += widthDiv3
+        col9n.1 += widthDiv3
+        col9n.2 += widthDiv3
+    }
+    if (heightRem3 >= 2) {
+        ; 3,4,5 の行に対して
+        col9n.3 += widthDiv3
+        col9n.4 += widthDiv3
+        col9n.5 += widthDiv3
+    }
+
+return
+
+
+#module
+#defcfunc Rnd32bit
+    ; 32ビットの乱数を生成する
+    return (rnd(32768)*32768 + rnd(32768)) * 4 + rnd(4)
+#global
+
+
+*_____________________last1
