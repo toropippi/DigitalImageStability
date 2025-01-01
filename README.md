@@ -1,159 +1,61 @@
-# Image Stability 解析
-(Readmeの一部はChat GPTで書かれています)
-## このプロジェクトについて
+# Image Stability 解析 / Image Stability Analysis
+
+[**WebGPU版 デモムービー / WebGPU Version Demo Movie**](https://github.com/user-attachments/assets/916cb30d-138a-43e7-a034-d2b67be44140)  
+WebGPU版の操作方法と解析イメージを確認できます / Watch this to understand how the WebGPU version operates.
+
+---
+
+## このプロジェクトについて / About This Project
 このプロジェクトは、[PNAS誌に掲載された論文](https://www.pnas.org/doi/10.1073/pnas.2406735121)のアイディアに基づいています。また、[論文著者がGoogle Driveに公開したコード](https://x.com/potato7192/status/1868859454139306454)を参考にして実装されています。  
-  
-このPythonプロジェクトは、**DeltaS_M**と呼ばれる構造的安定性指標を用いて、画像の「くっきりさ」を定量化するツールを提供します。この指標は、ピクセルのランダムなフリップやシャッフル操作により、画像の構造がどのように劣化するかを解析計算できます。  
-  
-関連記事 [絵文字と物理学　画像の「くっきりさ」を数値化する手法を開発](https://www.oist.jp/ja/news-center/news/2024/12/13/physics-and-emote-design-quantifying-clarity-digital-images)  
-関連記事 [OIST、デジタル画像の「視覚的な鮮明さ」を定量的に評価する手法を提案](https://news.mynavi.jp/techplus/article/20241217-3088143/)  
+This project is based on the idea presented in a [paper published in PNAS](https://www.pnas.org/doi/10.1073/pnas.2406735121). The implementation was inspired by [code shared by the authors on Google Drive](https://x.com/potato7192/status/1868859454139306454).  
 
-### 実行時イメージ
-![36](https://github.com/user-attachments/assets/12da3412-1ec8-4c4d-82c3-9cf7e1f48426)  
+現在、このプロジェクトには以下の3種類のバージョンがあります：  
+Currently, there are three versions available for this project:  
+1. **WebGPU版 / WebGPU Version**: [ブラウザ上](https://toropippi.github.io/DigitalImageStability/)で動作するインストール不要のバージョン / Browser-based version requiring no installation.  
+2. **exe版 / exe Version**: Windows向けの実行可能ファイル / Executable file for Windows.  
+3. **Python版 / Python Version**: スクリプトとして直接利用可能なバージョン / Script-based version for direct use.  
 
+このツールは、画像の構造的安定性指標である **DeltaS_M** を用いて画像の「くっきりさ」を数値化します。また、ピクセルのランダムなフリップやシャッフルを利用して画像構造の劣化を解析します。  
+This tool quantifies the "sharpness" of an image using the structural stability metric **DeltaS_M** and analyzes structural degradation caused by random pixel flipping and shuffling.  
 
-## 特徴
-- ユーザーが指定した画像を読み込み。
-- 入力画像のシャノンエントロピーを計算。
-- ピクセルのランダムな反転やシャッフルを適用し、構造の劣化を評価。
-- **DeltaS_M**とその構成要素を計算し、可視化。
-- 解析過程での画像（反転画像や色距離マップ）を出力。
-
-## 必要要件
-以下のPythonライブラリをインストールしてください：
-- `numpy`
-- `Pillow`
-- `matplotlib`
-
-以下のコマンドでライブラリをインストールできます：
-```bash
-pip install numpy pillow matplotlib
-```
-
-## 使い方
-1. リポジトリをクローンするか、スクリプト `ImageStability.py` をダウンロードしてください。
-2. 解析したい画像をスクリプトと同じディレクトリに配置してください。
-3. スクリプト内の `image_name` 変数に画像ファイル名を指定してください（デフォルト: `face.png`）。
-4. スクリプトを実行してください：
-```bash
-python ImageStability.py
-```
-
-### 入力
-- PNGやJPEGなどの一般的な画像フォーマットをサポートしています。
-
-### 出力
-- **DeltaS_M**: 入力画像のくっきりさを定量化したスカラー値。
-- **シャノンエントロピー**: 画像の情報量を表す値。
-- 可視化結果：
-  - 反転画像とシャッフル画像。
-  - 安定性指標（ΔS）、オリジナルスコア（S）、シャッフルスコア（S*）を示すグラフ。
-- 保存ファイル：
-  - `image_name_shuffled.png`: シャッフルされた画像。
-  - `image_name_flipped_<iteration>.png`: 各イテレーションでの反転画像。
-  - `image_name_color_distance_map_<iteration>.png`: 各イテレーションでの色距離マップ。
-  - `image_name_stabilityMetric.txt`: 安定性指標のデータ。
-
-### 例
-画像 `face.png` を指定すると、以下の結果が得られます：
-- DeltaS_M: **0.2946908**（例値）
-- ΔS、S、S* を示すグラフ。
-- 反転画像とシャッフル画像がカレントディレクトリに保存されます。
-
-### グラフ
-1. **構造的安定性解析**:
-   - ΔS（安定性指標） vs. 反転数/総ピクセル数（対数スケール）。
-2. **スコア比較**:
-   - オリジナル画像スコア（S）とシャッフル画像スコア（S*）。
-3. **全体グラフ**:
-   - ΔS、S、S* をまとめて表示。
-
-## さっそく個人的に使ってみた  
-これは今作っているゲームのスクリーンショットだ。ゲームイベントに出展するときにプレイ画面のスクショの提出が求められる。インパクトがあるシーンが望まれるのだが、この解析を使えばインパクトのある絵を定量化できるのではないか  
-![games](https://github.com/user-attachments/assets/8bc44fbf-dc48-4cfc-809f-29bc7adcd151)  
-2枚のシーンを用意した。いろいろ悩んで左の炎が目立つシーンをスクショとして提出したのだが、ΔSMを計算するとやはり左のほうが良さそうであることがわかる。  
-これを応用すれば、将来的にゲームの”絵作り”にも使えそうな気がする。今まで感覚のみに頼っていたことが数値化できるのだ！これはデカい！  
-(誰かUnityに組み込んでリアルタイムにゲーム画面のΔSMを計測できるようなアセット作ってくれないかな)  
-
-## ライセンス(License)
-このプロジェクトコードはMITライセンスの下で公開されています。コードの利用、変更、再配布は自由に行えます。  
-This project code is licensed under the MIT License.  
-さくらみこの画像は著者に許可を得て使用しております。  
-  
----
+関連記事 / Related Articles:  
+- [絵文字と物理学：画像の「くっきりさ」を数値化する手法を開発](https://www.oist.jp/ja/news-center/news/2024/12/13/physics-and-emote-design-quantifying-clarity-digital-images)  
+- [OIST提案：デジタル画像の視覧的鮮明さを定量的に評価する手法](https://news.mynavi.jp/techplus/article/20241217-3088143/)  
 
 ---
 
-# Image Stability Analysis
+## バージョンの使い方 / How to Use Each Version
 
-## About This Project
-This project is based on the idea presented in a [paper published in PNAS](https://www.pnas.org/doi/10.1073/pnas.2406735121). Additionally, the implementation was inspired by [code shared by the authors on Google Drive](https://x.com/potato7192/status/1868859454139306454).  
-  
-This Python project provides a tool to quantify the "sharpness" of an image using a structural stability metric called **DeltaS_M**. The metric is computed by analyzing how the structure of an image degrades when subjected to pixel flipping and shuffling operations.
-  
-## Features
-- Loads a user-provided image.
-- Calculates Shannon entropy for the input image.
-- Applies random pixel flips and shuffling to evaluate structural degradation.
-- Computes and visualizes the stability metric (**DeltaS_M**) and its components.
-- Outputs visualizations of the analysis process, including flipped images and color distance maps.
+### WebGPU版 / WebGPU Version
+- [**デモムービー**](https://github.com/user-attachments/assets/916cb30d-138a-43e7-a034-d2b67be44140)を参考にしてください / Refer to [**the demo movie**](＜Insert the WebGPU version movie URL here＞).  
+- [こちら](https://toropippi.github.io/DigitalImageStability/)にアクセスして画像をアップロードしてください / Access the [URL](https://toropippi.github.io/DigitalImageStability/) and upload the image for analysis.
 
-## Requirements
-To run the script, ensure you have the following Python packages installed:
-- `numpy`
-- `Pillow`
-- `matplotlib`
+### exe版 / exe Version
+1. [リリースページ](https://github.com/toropippi/DigitalImageStability/tree/main/%E3%83%87%E3%82%B8%E3%82%BF%E3%83%AB%E3%82%A4%E3%83%A1%E3%83%BC%E3%82%B8%E3%81%8F%E3%81%A3%E3%81%8D%E3%82%8A%E3%81%95%E8%A7%A3%E6%9E%90%E3%83%84%E3%83%BC%E3%83%AB)からダウンロードしてください / Download from [Releases](https://github.com/toropippi/DigitalImageStability/tree/main/%E3%83%87%E3%82%B8%E3%82%BF%E3%83%AB%E3%82%A4%E3%83%A1%E3%83%BC%E3%82%B8%E3%81%8F%E3%81%A3%E3%81%8D%E3%82%8A%E3%81%95%E8%A7%A3%E6%9E%90%E3%83%84%E3%83%BC%E3%83%AB).  
 
-You can install these packages using pip:
-```bash
-pip install numpy pillow matplotlib
-```
+### Python版 / Python Version
+1. 以下のPythonライブラリをインストールしてください / Install the following Python libraries:  
+   ```bash
+   pip install numpy pillow matplotlib
+   ```
+2. リポジトリをクローンするか`ImageStability.py`をダウンロードしてください / Clone the repository or download `ImageStability.py`.  
+3. スクリプトと同じフォルダに画像を置き、`image_name`を指定して実行してください。デフォルトの画像がすでにあるので活用ください。 / Place the image in the same folder as the script and specify `image_name` before executing. Please take advantage of the default images already available:  
+   ```bash
+   python ImageStability.py
+   ```
 
-## Usage
-1. Clone the repository or download the script `ImageStability.py`.
-2. Place the image you want to analyze in the same directory as the script.
-3. Open the script and specify the image file name in the `image_name` variable (default: `face.png`).
-4. Run the script:
-```bash
-python ImageStability.py
-```
+---
 
-### Input
-- The script accepts an image file in standard formats (e.g., PNG, JPEG).
+## 出力例 / Output Examples
+- DeltaS_M値 (例: 0.2946908) / DeltaS_M value (e.g., 0.2946908).  
+- シャッフル画像、反転画像、カラーマップ画像などが出力されます / Outputs shuffled images, flipped images, color map images, etc.  
+- 数値データ (例: `image_name_stabilityMetric.txt`) / Numerical data (e.g., `image_name_stabilityMetric.txt`).  
 
-### Output
-- **DeltaS_M**: A scalar value quantifying the sharpness of the input image.
-- **Shannon Entropy**: A measure of the information content in the image.
-- Visualizations:
-  - Flipped images and shuffled images.
-  - Graphs showing the stability metric (ΔS), original scores (S), and shuffled scores (S*).
-- Saved files:
-  - `image_name_shuffled.png`: Shuffled version of the input image.
-  - `image_name_flipped_<iteration>.png`: Flipped image at specific iterations.
-  - `image_name_color_distance_map_<iteration>.png`: Color distance map at specific iterations.
-  - `image_name_stabilityMetric.txt`: Stability metric data.
+---
 
-### Example
-If the image `face.png` is provided, the script computes and outputs the following:
-- DeltaS_M: **0.2946908** (example value)
-- Graphs illustrating ΔS, S, and S*.
-- Flipped and shuffled images saved to the current directory.
+## ライセンス / License
+このプロジェクトコードはMITライセンスの下で公開されています / This project code is licensed under the MIT License.  
 
-### Graphs
-1. **Structural Stability Analysis**:
-   - ΔS (Stability Metric) vs. Number of Flips / Total Pixels (log scale).
-2. **Scores Comparison**:
-   - Original image score (S) and shuffled image score (S*).
-3. **Combined Graph**:
-   - ΔS, S, and S* in a single visualization.
+さくらみこの画像は著者に許可を得て使用しております / The image of Miko Sakura is used with permission of the author.
 
-## Explanation of DeltaS_M
-(Generated by Chat GPT 4o)
-The metric **DeltaS_M** represents the structural stability of the image. It quantifies how resistant the image's structure is to random pixel perturbations. A higher DeltaS_M indicates greater sharpness and structural integrity.
-
-## License
-This project code is licensed under the MIT License. Feel free to use, modify, and distribute the code as needed.  
-  
-The image of Miko Sakura is used with permission of the author.
-  
 ---
