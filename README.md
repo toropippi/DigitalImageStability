@@ -2,6 +2,13 @@
 
 [**WebGPU版 デモムービー / WebGPU Version Demo Movie**](https://github.com/user-attachments/assets/916cb30d-138a-43e7-a034-d2b67be44140)  
 https://github.com/user-attachments/assets/c646e336-14de-41d7-aabe-8f48429bb57b
+
+
+
+https://github.com/user-attachments/assets/b667e8a7-d475-4587-b613-0a6b45acdb10
+
+
+
 WebGPU版の操作方法と解析イメージを確認できます / Watch this to understand how the WebGPU version operates.
 
 ---
