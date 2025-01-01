@@ -1,10 +1,8 @@
 # Image Stability 解析 / Image Stability Analysis
 
-[**WebGPU版/ WebGPU Version **](https://toropippi.github.io/DigitalImageStability/)
+[WebGPU版/ WebGPU Version](https://toropippi.github.io/DigitalImageStability/)
 
 https://github.com/user-attachments/assets/b667e8a7-d475-4587-b613-0a6b45acdb10
-
-WebGPU版の操作方法と解析イメージを確認できます / Watch this to understand how the WebGPU version operates.
 
 ---
 
@@ -30,13 +28,16 @@ This tool quantifies the "sharpness" of an image using the structural stability 
 ## バージョンの使い方 / How to Use Each Version
 
 ### WebGPU版 / WebGPU Version
+- 一番手軽に使える  
 - [**デモムービー**](https://github.com/user-attachments/assets/916cb30d-138a-43e7-a034-d2b67be44140)を参考にしてください / Refer to [**the demo movie**](＜Insert the WebGPU version movie URL here＞).  
-- [こちら](https://toropippi.github.io/DigitalImageStability/)にアクセスして画像をアップロードしてください / Access the [URL](https://toropippi.github.io/DigitalImageStability/) and upload the image for analysis.
+- [こちら](https://toropippi.github.io/DigitalImageStability/)にアクセスして画像をドラッグ＆ドロップしてください / Access the [URL](https://toropippi.github.io/DigitalImageStability/) and upload the image for analysis.
 
 ### exe版 / exe Version
+- リアルタイムに数値の変化をみたい人向け  
 1. [リリースページ](https://github.com/toropippi/DigitalImageStability/tree/main/%E3%83%87%E3%82%B8%E3%82%BF%E3%83%AB%E3%82%A4%E3%83%A1%E3%83%BC%E3%82%B8%E3%81%8F%E3%81%A3%E3%81%8D%E3%82%8A%E3%81%95%E8%A7%A3%E6%9E%90%E3%83%84%E3%83%BC%E3%83%AB)からダウンロードしてください / Download from [Releases](https://github.com/toropippi/DigitalImageStability/tree/main/%E3%83%87%E3%82%B8%E3%82%BF%E3%83%AB%E3%82%A4%E3%83%A1%E3%83%BC%E3%82%B8%E3%81%8F%E3%81%A3%E3%81%8D%E3%82%8A%E3%81%95%E8%A7%A3%E6%9E%90%E3%83%84%E3%83%BC%E3%83%AB).  
 
 ### Python版 / Python Version
+- 詳細実装を知りたい人向け  
 1. 以下のPythonライブラリをインストールしてください / Install the following Python libraries:  
    ```bash
    pip install numpy pillow matplotlib
@@ -50,9 +51,22 @@ This tool quantifies the "sharpness" of an image using the structural stability 
 ---
 
 ## 出力例 / Output Examples
-- DeltaS_M値 (例: 0.2946908) / DeltaS_M value (e.g., 0.2946908).  
-- シャッフル画像、反転画像、カラーマップ画像などが出力されます / Outputs shuffled images, flipped images, color map images, etc.  
-- 数値データ (例: `image_name_stabilityMetric.txt`) / Numerical data (e.g., `image_name_stabilityMetric.txt`).  
+- 保存ファイル：
+  - `image_name_shuffled.png`: シャッフルされた画像。
+  - `image_name_flipped_<iteration>.png`: 各イテレーションでの反転画像。
+  - `image_name_color_distance_map_<iteration>.png`: 各イテレーションでの色距離マップ。
+  - `image_name_stabilityMetric.txt`: 安定性指標のデータ。
+
+### 実行時イメージ
+![36](https://github.com/user-attachments/assets/12da3412-1ec8-4c4d-82c3-9cf7e1f48426)  
+
+
+## さっそく個人的に使ってみた  
+これは今作っているゲームのスクリーンショットだ。ゲームイベントに出展するときにプレイ画面のスクショの提出が求められる。インパクトがあるシーンが望まれるのだが、この解析を使えばインパクトのある絵を定量化できるのではないか  
+![games](https://github.com/user-attachments/assets/8bc44fbf-dc48-4cfc-809f-29bc7adcd151)  
+2枚のシーンを用意した。いろいろ悩んで左の炎が目立つシーンをスクショとして提出したのだが、ΔSMを計算するとやはり左のほうが良さそうであることがわかる。  
+これを応用すれば、将来的にゲームの”絵作り”にも使えそうな気がする。今まで感覚のみに頼っていたことが数値化できるのだ！これはデカい！  
+(誰かUnityに組み込んでリアルタイムにゲーム画面のΔSMを計測できるようなアセット作ってくれないかな)  
 
 ---
 
