@@ -36,6 +36,8 @@ This tool quantifies the "sharpness" of an image using the structural stability 
 - リアルタイムに数値の変化をみたい人向け  
 1. [リリースページ](https://github.com/toropippi/DigitalImageStability/tree/main/%E3%83%87%E3%82%B8%E3%82%BF%E3%83%AB%E3%82%A4%E3%83%A1%E3%83%BC%E3%82%B8%E3%81%8F%E3%81%A3%E3%81%8D%E3%82%8A%E3%81%95%E8%A7%A3%E6%9E%90%E3%83%84%E3%83%BC%E3%83%AB)からフォルダごとダウンロードしてください / Download from [Releases](https://github.com/toropippi/DigitalImageStability/tree/main/%E3%83%87%E3%82%B8%E3%82%BF%E3%83%AB%E3%82%A4%E3%83%A1%E3%83%BC%E3%82%B8%E3%81%8F%E3%81%A3%E3%81%8D%E3%82%8A%E3%81%95%E8%A7%A3%E6%9E%90%E3%83%84%E3%83%BC%E3%83%AB).  
 
+![exe](https://github.com/user-attachments/assets/5082f128-f0a9-4476-afa2-4c95ec9fc38a)
+
 ### Python版 / Python Version
 - 詳細実装を知りたい人向け  
 1. 以下のPythonライブラリをインストールしてください / Install the following Python libraries:  
