@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>ΔSM 計算ツール</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+      color: #333;
+    }
+    #webgpu-warning {
+      background-color: #ffeb3b;
+      padding: 15px;
+      border-bottom: 2px solid #ffa000;
+      text-align: left;
+    }
+    #webgpu-warning p {
+      margin: 0;
+      font-size: 1em;
+      line-height: 1.5;
+    }
+    #webgpu-warning button {
+      margin-top: 10px;
+      background-color: #ffa000;
+      color: #fff;
+      border: none;
+      padding: 5px 10px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    #webgpu-warning button:hover {
+      background-color: #ff8c00;
+    }
+    #drop-area {
+      border: 2px dashed #aaa;
+      border-radius: 10px;
+      padding: 20px;
+      margin: 20px auto;
+      width: 80%;
+      background-color: #fff;
+      cursor: pointer;
+    }
+    #drop-area.hover {
+      background-color: #e0e0e0;
+      border-color: #333;
+    }
+    #output-canvas {
+      margin-top: 20px;
+      border: 2px solid #555;
+      border-radius: 10px;
+    }
+    #result-area {
+      margin: 20px auto;
+      width: 80%;
+      background-color: #f9f9f9;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    #sumDisplay {
+      font-size: 1.5em;
+      margin-top: 10px;
+    }
+    #dcDisplay {
+      font-size: 1.2em;
+    }
+    .small-char {
+      font-size: 0.8em;
+      vertical-align: sub;
+    }
+    #explanation {
+      text-align: left;
+      margin: 20px auto;
+      width: 80%;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    #explanation h2 {
+      color: #444;
+    }
+    #citation, #author-info {
+      margin: 30px auto;
+      width: 80%;
+      font-size: 0.9em;
+      text-align: left;
+      color: #555;
+      padding: 10px;
+      border-top: 1px solid #ddd;
+      background-color: #f9f9f9;
+    }
+    #citation a, #author-info a {
+      color: #007BFF;
+      text-decoration: none;
+    }
+    #citation a:hover, #author-info a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <!-- WebGPU案内 -->
+  <div id="webgpu-warning">
+    <p>このページは WebGPU を使用しています。一部の最新ブラウザでのみ動作します。Chrome、Edge、または対応するブラウザでアクセスし、WebGPU が有効になっていることを確認してください。</p>
+    <p>対応ブラウザについての詳細は、以下をご参照ください:</p>
+    <ul>
+      <li>Google Chrome: <strong>chrome://flags/#enable-unsafe-webgpu</strong> で WebGPU を有効化</li>
+      <li>Microsoft Edge: <strong>edge://flags/#enable-unsafe-webgpu</strong> で WebGPU を有効化</li>
+    </ul>
+    <button onclick="document.getElementById('webgpu-warning').style.display='none'">閉じる</button>
+  </div>
+
+  <h1>画像解析ツール: ΔSM 計算</h1>
+
+  <!-- ドラッグ＆ドロップ領域 -->
+  <div id="drop-area">
+    <p>画像ファイルをここにドロップしてください</p>
+    <input type="file" id="file-input" accept="image/*" hidden>
+  </div>
+
+  <!-- 結果表示領域 -->
+  <div id="result-area">
+    <h2>計算結果</h2>
+    <div id="sumDisplay">ΔS<span class="small-char">M</span> =</div>
+    <div id="dcDisplay">〈d<span class="small-char">c</span>〉=</div>
+  </div>
+
+  <!-- 説明セクション -->
+  <div id="explanation">
+    <h2>ΔS<span class="small-char">M</span> と 〈d<span class="small-char">c</span>〉とは？</h2>
+    <p><strong>ΔS<span class="small-char">M</span></strong> は、画像の構造的な安定性を定量化した指標です。論文のプレスリリースでは"くっきりさ"と表現されています。この指標は、元の画像とランダムにピクセルがシャッフルされた画像を使って測定されます。この値が高いほど"くっきり"しており視認性が良い可能性があります。</p>
+    <p><strong>〈d<span class="small-char">c</span>〉</strong>（平均色距離）は、RGB3D空間での色間の平均ユークリッド距離を表します。コントラストが大きい画像など、色の範囲が豊かであると値が大きくなります。ΔSMはこれを絶対超えることはありません</p>
+    <p><strong>注意</strong> ランダムを使った計算なので結果に少しばらつきがあります。</p>
+    <p><strong>黄色タイル画像</strong> 画像のどの領域がΔSMを上昇させているかを黄色のタイルで表しています↓</p>
+  </div>
+  
+  <canvas id="output-canvas"></canvas>
+
+  <!-- ツール作成者 -->
+  <div id="author-info">
+    <p>このツールの作成者: <strong>toropippi</strong></p>
+  </div>
+
+  <!-- 引用情報 -->
+  <div id="citation">
+    <p>参考文献:</p>
+    <p>
+      S.T. Chan, E. Fried, Structural stability and thermodynamics of artistic composition, 
+      <i>Proc. Natl. Acad. Sci. U.S.A.</i> 121 (51) e2406735121, 
+      <a href="https://doi.org/10.1073/pnas.2406735121" target="_blank">https://doi.org/10.1073/pnas.2406735121</a> (2024).
+    </p>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
