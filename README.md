@@ -29,12 +29,12 @@ This tool quantifies the "sharpness" of an image using the structural stability 
 
 ### WebGPU版 / WebGPU Version
 - 一番手軽に使える  
-- [**デモムービー**](https://github.com/user-attachments/assets/916cb30d-138a-43e7-a034-d2b67be44140)を参考にしてください / Refer to [**the demo movie**](＜Insert the WebGPU version movie URL here＞).  
 - [こちら](https://toropippi.github.io/DigitalImageStability/)にアクセスして画像をドラッグ＆ドロップしてください / Access the [URL](https://toropippi.github.io/DigitalImageStability/) and upload the image for analysis.
+- [**デモムービー**](https://github.com/user-attachments/assets/b667e8a7-d475-4587-b613-0a6b45acdb10)を参考にしてください / Refer to [**the demo movie**](https://github.com/user-attachments/assets/b667e8a7-d475-4587-b613-0a6b45acdb10).  
 
 ### exe版 / exe Version
 - リアルタイムに数値の変化をみたい人向け  
-1. [リリースページ](https://github.com/toropippi/DigitalImageStability/tree/main/%E3%83%87%E3%82%B8%E3%82%BF%E3%83%AB%E3%82%A4%E3%83%A1%E3%83%BC%E3%82%B8%E3%81%8F%E3%81%A3%E3%81%8D%E3%82%8A%E3%81%95%E8%A7%A3%E6%9E%90%E3%83%84%E3%83%BC%E3%83%AB)からダウンロードしてください / Download from [Releases](https://github.com/toropippi/DigitalImageStability/tree/main/%E3%83%87%E3%82%B8%E3%82%BF%E3%83%AB%E3%82%A4%E3%83%A1%E3%83%BC%E3%82%B8%E3%81%8F%E3%81%A3%E3%81%8D%E3%82%8A%E3%81%95%E8%A7%A3%E6%9E%90%E3%83%84%E3%83%BC%E3%83%AB).  
+1. [リリースページ](https://github.com/toropippi/DigitalImageStability/tree/main/%E3%83%87%E3%82%B8%E3%82%BF%E3%83%AB%E3%82%A4%E3%83%A1%E3%83%BC%E3%82%B8%E3%81%8F%E3%81%A3%E3%81%8D%E3%82%8A%E3%81%95%E8%A7%A3%E6%9E%90%E3%83%84%E3%83%BC%E3%83%AB)からフォルダごとダウンロードしてください / Download from [Releases](https://github.com/toropippi/DigitalImageStability/tree/main/%E3%83%87%E3%82%B8%E3%82%BF%E3%83%AB%E3%82%A4%E3%83%A1%E3%83%BC%E3%82%B8%E3%81%8F%E3%81%A3%E3%81%8D%E3%82%8A%E3%81%95%E8%A7%A3%E6%9E%90%E3%83%84%E3%83%BC%E3%83%AB).  
 
 ### Python版 / Python Version
 - 詳細実装を知りたい人向け  
